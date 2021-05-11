@@ -1,2 +1,2 @@
 # maven-quick-start
-Sample project to use with Maven quick start project
+Maven app to automate loginand retrieveing key info from banking sites
