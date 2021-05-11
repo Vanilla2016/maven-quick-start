@@ -5,6 +5,43 @@
 		http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>clinic.programmming</groupId>
-  <artifactId>manve-quick-start</artifactId>
-  <version>1.0</version>
+  <artifactId>maven-quick-start</artifactId>
+  <version>1.2</version>
+   <dependencies>
+   <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+   <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.10</version>
+    </dependency>
+    <dependency>
+	<groupId>org.seleniumhq.selenium</groupId>
+	<artifactId>selenium-chrome-driver</artifactId>
+	<version>2.50.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
+	<dependency>
+	    <groupId>io.github.bonigarcia</groupId>
+	    <artifactId>webdrivermanager</artifactId>
+	    <version>4.4.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-core</artifactId>
+		<version>2.18.3</version>
+	</dependency>
+	<dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock</artifactId>
+        <version>2.1.11</version>
+        <scope>test</scope>
+    </dependency>
+	 <!-- https://mvnrepository.com/artifact/junit/junit -->
+   <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13</version>
+    <scope>test</scope>
+  </dependency>
+  </dependencies>
 </project>
