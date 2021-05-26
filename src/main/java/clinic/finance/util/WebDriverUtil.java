@@ -1,11 +1,6 @@
-package clinic.webriver.chrome;
+package clinic.finance.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,68 +9,41 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+
+import clinic.finance.beans.accountEnum;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class WebDriverUtil {
+public class WebDriverUtil extends CommonFinanceUtil{
 
 	private WebDriver driver = null;
 	
-	private final String USERNAMEKEY = "virgin.login.username";
-	private final String PINKEY = "virgin.login.pin";
-	private final String LOGINBOXKEY = "virgin.loginbox.id";
-	private final String PINBOXKEY = "virgin.pinbox.id";
-	private final String LOGINKEY = "virgin.login.id";
+	protected String PINKEY = "pin";
+	private final String LOGINKEY = "id";
+	protected String LOGINBUTTONKEY = "login";
+	protected String LOGOUTBUTTONKEY = "logout";
+	protected String LOGINBOXKEY = "loginBox";
+	protected String PINBOXKEY = "pinBox";
+	
 	private final String SUMMARYCLASSNAME = "summary.class.name";
-
-	private String userName;
-	private String pin;
-	private String virginLoginBoxId; 
-	private String virginPinBoxId;
-	private String virginLoginId;
-	
-	private String summaryClassName;
-
 	private BigDecimal valuationSummary;
-
-	private Properties loadPropertiesFromResource(String filePath) {
-	   
-		File propFile;
-		FileReader propFileReader;
-		Properties prop = null;
-		
-		try {
-			propFile = new File(filePath);
-				propFileReader = new FileReader(propFile);
-		    prop = new Properties();
-		    prop.load(propFileReader);
-		
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return prop;
-	}
-	
+	private String virginLoginBoxId; 
 	/*
 	 * properties constructor
 	 */
 	public WebDriverUtil (String propertiesPath) {
-		setSiteProperties(loadPropertiesFromResource(propertiesPath));
+		loadPropertiesFromResource(propertiesPath);
 	}
 	
-	
-	public void setSiteProperties (Properties prop) {
-		
-		if (prop!=null) {
-			userName = prop.getProperty(USERNAMEKEY);
-			pin = prop.getProperty(PINKEY);
-			virginLoginBoxId = prop.getProperty(LOGINBOXKEY);
-			virginPinBoxId = prop.getProperty(PINBOXKEY);
-			virginLoginId = prop.getProperty(LOGINKEY);
-			summaryClassName = prop.getProperty(SUMMARYCLASSNAME);
-		}
+	@Override
+	protected Properties getProperties() {
+		return prop;
 	}
 	
-	public void initializeChromeWebDriver(String url) {
+	public void setPropsPrefix(String prefix) {
+		propsPrefix = prefix;
+	}
+	
+	public void initializeChromeWebDriver(String uriKey) {
 			
 			WebDriverManager.chromedriver().browserVersion("90.0.4430.24").setup();
 			ChromeOptions options = new ChromeOptions();
@@ -87,7 +55,8 @@ public class WebDriverUtil {
 			options.addArguments("--disable-browser-side-navigation"); 
 			options.addArguments("--disable-gpu"); 
 			driver = new ChromeDriver(options); 
-			driver.get(url);
+			//driver.get(prop.getProperty(propsPrefix+uriKey));
+			driver.get(uriKey);
 		}
 	
 	public void quitChromeWebDriver() {
@@ -98,6 +67,10 @@ public class WebDriverUtil {
 		return(driver.findElement(By.id(docElementId)));
 	}
 
+	public WebElement getDocElementByName(String docElementId) {
+		return(driver.findElement(By.name(docElementId)));
+	}
+
 	public List <WebElement> getDocElementsByClass(String docElementClass) {
 		return(driver.findElements(By.className(docElementClass)));
 	}
@@ -106,19 +79,15 @@ public class WebDriverUtil {
 		driver.findElement(By.id(docElementId)).sendKeys(charString);
 	}
 	
-	public String getDriverURL() {
-		return driver.getCurrentUrl();
-	}
-
 	public String getPageTitle() {
 		return driver.getTitle();
 	}
 
 	public void logIntoSite() {
 		 
-		 populateDocElement(virginLoginBoxId, userName);
-	   	 populateDocElement(virginPinBoxId, pin);
-	   	 WebElement submitButton = getDocElement(virginLoginId);
+		 populateDocElement(prop.getProperty(propsPrefix+LOGINBOXKEY), prop.getProperty(propsPrefix+USERKEY));
+	   	 populateDocElement(prop.getProperty(propsPrefix+PINBOXKEY), prop.getProperty(propsPrefix+PINKEY));
+	   	 WebElement submitButton = getDocElement(prop.getProperty(propsPrefix+LOGINBUTTONKEY));
 	   	 /*
 	   	  * This seems to implicitly operate a get, 
 	   	  * as the method blocks until the Summary screen is returned
@@ -131,36 +100,27 @@ public class WebDriverUtil {
 	 */
 	public BigDecimal getValuationSummary () {
 		
-		List <WebElement> valuationSummaryElems = getDocElementsByClass(summaryClassName);
+		List <WebElement> valuationSummaryElems = getDocElementsByClass(prop.getProperty(SUMMARYCLASSNAME));
 		for(WebElement element : valuationSummaryElems) {
 			String elementText = element.getText();
 			if (elementText.contains("£")) {
 				elementText = elementText.substring(elementText.indexOf("£")+1 , elementText.indexOf(","))
 						+ elementText.substring(elementText.indexOf(",")+1);
 				valuationSummary = new BigDecimal(elementText);
-
 			}
 		};
 		return valuationSummary;
 	}
 	
-	public String getUserName() {
-		return userName;
+	public void logOutOfSite() {
+		 WebElement logoutButton = getDocElementByName(prop.getProperty(propsPrefix+LOGOUTBUTTONKEY));
+		 logoutButton.click();
+		 
+		 logoutButton = getDocElementByName(prop.getProperty(propsPrefix+LOGOUTBUTTONKEY));
+		 logoutButton.click();
 	}
 	
-	public String getPin() {
-		return pin;
-	}
-
 	public String getVirginLoginBoxId() {
-		return virginLoginBoxId;
-	}
-
-	public String getVirginPinBoxId() {
-		return virginPinBoxId;
-	}
-	
-	public String getVirginLoginId() {
-		return virginLoginId;
+		return prop.getProperty(propsPrefix+LOGINBOXKEY);
 	}
 }
