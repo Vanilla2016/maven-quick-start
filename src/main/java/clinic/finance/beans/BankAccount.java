@@ -7,18 +7,16 @@ import java.util.List;
 public class BankAccount {
 	
 	private int accountId = 0;
-
 	private double accountBalance = 0;
-
-	private String accountType = null;
-
-	private String accountName = null;
-
 	private int accountInterest = 0;
-
+	private String accountType = null;
+	private String accountName = null;
 	private String accountCol = null;
-	
-	private String uri = null;
+	private String propsPrefix = null;
+	private String loginUri = null;
+	private String mockPageName = null;
+	private String summaryUri = null;
+	private String summaryScreenTitle = null;
 	
 	/*
 	 * Maintain List of updateable fields based on the 
@@ -27,23 +25,40 @@ public class BankAccount {
 	private List <String> updateFields  =  new ArrayList<String>();
 	
 	public BankAccount (int accountId, double accountBalance, String accountType,
-			String accountName , int accountInterest, String accountCol, String uri){
+			String accountName , int accountInterest, String propsPrefix, String loginUri, 
+											String mockPageName, String summaryScreenTitle) {
+		
+		this(accountId, accountBalance, accountType,
+				accountName , accountInterest, propsPrefix, loginUri);
+		
+		if (summaryScreenTitle != null) {
+			this.summaryScreenTitle = summaryScreenTitle;
+			updateFields.add("summaryScreenTitle");
+		}
+		if (mockPageName != null) {
+			this.mockPageName = mockPageName;
+			updateFields.add("mockPageName");
+		}
+	}
+
+		public BankAccount (int accountId, double accountBalance, String accountType,
+			String accountName , int accountInterest, String propsPrefix, String loginUri) {
 		
 		this(accountId, accountBalance, accountType,
 				accountName , accountInterest);
 		
-		if (accountCol != null) {
-			this.accountCol = accountCol;
-			updateFields.add("accountCol");
+		if (propsPrefix != null) {
+			this.propsPrefix = propsPrefix;
+			updateFields.add("propsPrefix");
 		}
-		if (uri != null) {
-			this.uri = uri;
-			updateFields.add("uri");
+		if (loginUri != null) {
+			this.loginUri = loginUri;
+			updateFields.add("loginUri");
 		}
 	}
 	
 	public BankAccount (int accountId, double accountBalance, String accountType,
-			String accountName , int accountInterest){
+			String accountName , int accountInterest) {
 		
 		this(accountId, accountBalance);
 		
@@ -95,11 +110,19 @@ public class BankAccount {
 	public String getAccountCol() {
 		return accountCol;
 	}
-	public String getUri() {
-		return uri;
+	public void setLoginUri(String loginUri) {
+		this.loginUri = loginUri;
 	}
-	public void setUri(String uri) {
-		this.uri = uri;
+	public String getsummaryUrii() {
+		return summaryUri;
 	}
-	
+	public void setsummaryUri(String summaryUri) {
+		this.summaryUri = summaryUri;
+	}
+	public String getMockPageName() {
+		return mockPageName;
+	}
+	public String getSummaryScreenTitle() {
+		return summaryScreenTitle;
+	}
 }

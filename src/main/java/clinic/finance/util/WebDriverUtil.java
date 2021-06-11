@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,7 @@ public class WebDriverUtil extends CommonFinanceUtil{
 	protected String LOGOUTBUTTONKEY = "logout";
 	protected String LOGINBOXKEY = "loginBox";
 	protected String PINBOXKEY = "pinBox";
+	protected String USERPACKEY = "pac";
 	
 	private final String SUMMARYCLASSNAME = "summary.class.name";
 	private BigDecimal valuationSummary;
@@ -43,7 +45,7 @@ public class WebDriverUtil extends CommonFinanceUtil{
 		propsPrefix = prefix;
 	}
 	
-	public void initializeChromeWebDriver(String uriKey) {
+	public void initializeChromeWebDriver(String uriKey, boolean liveContext) {
 			
 			WebDriverManager.chromedriver().browserVersion("90.0.4430.24").setup();
 			ChromeOptions options = new ChromeOptions();
@@ -55,8 +57,11 @@ public class WebDriverUtil extends CommonFinanceUtil{
 			options.addArguments("--disable-browser-side-navigation"); 
 			options.addArguments("--disable-gpu"); 
 			driver = new ChromeDriver(options); 
-			//driver.get(prop.getProperty(propsPrefix+uriKey));
-			driver.get(uriKey);
+			if (liveContext) {
+				driver.get(uriKey);
+			}else {
+				driver.get(prop.getProperty(propsPrefix+uriKey));
+			}
 		}
 	
 	public void quitChromeWebDriver() {
@@ -71,6 +76,10 @@ public class WebDriverUtil extends CommonFinanceUtil{
 		return(driver.findElement(By.name(docElementId)));
 	}
 
+	public WebElement getDocElementByClass(String docElementClass) {
+		return(driver.findElement(By.className(docElementClass)));
+	}
+
 	public List <WebElement> getDocElementsByClass(String docElementClass) {
 		return(driver.findElements(By.className(docElementClass)));
 	}
@@ -82,17 +91,64 @@ public class WebDriverUtil extends CommonFinanceUtil{
 	public String getPageTitle() {
 		return driver.getTitle();
 	}
+	
+	/*
+	 * siteName param as different login screens feature different elements
+	 */
 
-	public void logIntoSite() {
-		 
-		 populateDocElement(prop.getProperty(propsPrefix+LOGINBOXKEY), prop.getProperty(propsPrefix+USERKEY));
-	   	 populateDocElement(prop.getProperty(propsPrefix+PINBOXKEY), prop.getProperty(propsPrefix+PINKEY));
-	   	 WebElement submitButton = getDocElement(prop.getProperty(propsPrefix+LOGINBUTTONKEY));
-	   	 /*
-	   	  * This seems to implicitly operate a get, 
-	   	  * as the method blocks until the Summary screen is returned
-	   	  */
-	   	 submitButton.click();
+	public void logIntoSite(String siteName, String navPos) throws InterruptedException {
+		
+		WebElement submitButton  = null;
+		boolean submit = false;
+		
+		if (siteName.equalsIgnoreCase(accountEnum.VIRGIN.toString())) {
+		
+			populateDocElement(prop.getProperty(accountEnum.VIRGIN.getPropsPrefix()+LOGINBOXKEY),
+					prop.getProperty(accountEnum.VIRGIN.getPropsPrefix()+USERKEY));
+			populateDocElement(prop.getProperty(accountEnum.VIRGIN.getPropsPrefix()+PINBOXKEY), 
+					prop.getProperty(accountEnum.VIRGIN.getPropsPrefix()+PINKEY));
+			submitButton = getDocElement(prop.getProperty(propsPrefix+LOGINBUTTONKEY));
+		if (submitButton != null) submit=true;
+		
+		}
+		/*
+		 * 
+		else if (siteName.equalsIgnoreCase(accountEnum.CATERALLEN.toString())) {
+			if (navPos.equalsIgnoreCase("pacURi")) {//PAC screen
+				char [] pinCode = prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+PINKEY).toCharArray();
+				int pacPos=1;
+				for(char pinDigit : pinCode){
+					
+					populateDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+USERPACKEY)+pacPos, 
+							String.valueOf(pinDigit));
+					pacPos++;
+				}
+				populateDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+PINBOXKEY), 
+												prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+PASSKEY));
+				submitButton = getDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+LOGINBUTTONKEY));
+				if (submitButton != null) submit=true;
+			}else {
+				 // Switching to Alert        
+		        Alert alert = driver.switchTo().alert();		
+		        		
+		        // Capturing alert message.    
+		        String alertMessage= driver.switchTo().alert().getText();		
+		        		
+		        // Displaying alert message		
+		        System.out.println(alertMessage);
+		        Thread.sleep(5000);
+		    	populateDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+LOGINBOXKEY), 
+												prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+USERKEY));
+				submitButton = getDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+LOGINBUTTONKEY));
+				if (submitButton != null) submit=true;
+			}
+		}
+		 */
+		/*
+		 * This seems to implicitly operate a get, 
+		 * as the method blocks until the Summary screen is returned
+		 */
+		if (submit)	submitButton.click();
 	}
 	
 	/*
@@ -120,7 +176,7 @@ public class WebDriverUtil extends CommonFinanceUtil{
 		 logoutButton.click();
 	}
 	
-	public String getVirginLoginBoxId() {
+	public String getLoginBoxId() {
 		return prop.getProperty(propsPrefix+LOGINBOXKEY);
 	}
 }

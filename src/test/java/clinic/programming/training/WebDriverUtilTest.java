@@ -45,15 +45,8 @@ public class WebDriverUtilTest {
 	private static JDBCUtil jdbcUtil = null;
 	
 	private final String propertiesLocation = "src\\test\\resources\\test.properties";
-	
-	private final String VIRGINPREFIX = "virgin.login.";
-	private final String VIRGINSTUBLOGINURI = "loginUri";
 	private final String VIRGINSTUBSUMMARYURI = "summaryUri";
 
-	private final String MARCUSPREFIX = "marcus.login.";
-	private final String MARCUSTUBLOGINURI = "loginUri";
-	
-	private final String summaryScreenTitle = "Error 404";
 	private final double summaryValue = 19362.64;
 	
     @Rule
@@ -61,7 +54,10 @@ public class WebDriverUtilTest {
     
     String virginMoneyHTML = "";
     String virginSummaryHTML = "";
+    
     String marcusHTML = "";
+    String callenHTML = "";
+    String callenPacHTML = "";
     
     @Before
     public void setup() throws IOException, URISyntaxException {
@@ -102,7 +98,7 @@ public class WebDriverUtilTest {
 						.withStatus(200)
 						.withHeader("Content-Type", "text/html")
 						.withBody(virginMoneyHTML)));
-
+    	
     	virginSummaryHTML = returnHTMLResource("virginsummary");
     	wireMockRule.stubFor(get(urlEqualTo("/virginsummary"))
     			.willReturn(aResponse()
@@ -110,59 +106,79 @@ public class WebDriverUtilTest {
     					.withHeader("Content-Type", "text/html")
     					.withBody(virginSummaryHTML)));
 
+    	callenHTML = returnHTMLResource("callen");
+    	wireMockRule.stubFor(get(urlEqualTo("/callen"))
+    			.willReturn(aResponse()
+    					.withStatus(200)
+    					.withHeader("Content-Type", "text/html")
+    					.withBody(callenHTML)));
+    	
+    	callenPacHTML = returnHTMLResource("callenpac");
+    	wireMockRule.stubFor(get(urlEqualTo("/callenpac"))
+    			.willReturn(aResponse()
+    					.withStatus(200)
+    					.withHeader("Content-Type", "text/html")
+    					.withBody(callenPacHTML)));
+
+    	/*
     	marcusHTML = returnHTMLResource("marcus");
     	wireMockRule.stubFor(get(urlEqualTo("/marcus"))
     			.willReturn(aResponse()
     					.withStatus(200)
     					.withHeader("Content-Type", "text/html")
     					.withBody(marcusHTML)));
+    	 */
+
     }
     
    
     @Test
     public void testLoadResourceAsUrl() {
-    	driverUtil.setPropsPrefix(VIRGINPREFIX);
-    	driverUtil.initializeChromeWebDriver(VIRGINSTUBLOGINURI);
+    	driverUtil.setPropsPrefix(accountEnum.VIRGIN.getPropsPrefix());
+    	driverUtil.initializeChromeWebDriver(accountEnum.VIRGIN.getloginUriProp(), false);
     }
-    
+   
     @Test
     /*
      * initializeChromeWebDriver param had been set to virginHTML - 
      * 			the actual path to the file, not the URL configured to return it
      */
     public void testFocusLoginBoxes() {
-    	for (accountEnum accountEnum : accountEnum.values()) {
-    		
-    		if (accountEnum.toString().equalsIgnoreCase(
-    					clinic.finance.beans.accountEnum.VIRGIN.toString())) {
-    			driverUtil.setPropsPrefix(VIRGINPREFIX);
-    			driverUtil.initializeChromeWebDriver(VIRGINSTUBLOGINURI);
-    		} else if (accountEnum.toString().equalsIgnoreCase(
-					clinic.finance.beans.accountEnum.MARCUS.toString())) {
-    			driverUtil.setPropsPrefix(MARCUSPREFIX);
-    			driverUtil.initializeChromeWebDriver(MARCUSTUBLOGINURI);
-    		}
-    			
-    			WebElement loginBox = null;
-    			loginBox = driverUtil.getDocElement(driverUtil.getVirginLoginBoxId());
+    	WebElement loginBox = null;
+    	for (accountEnum accountName : accountEnum.values()) {
+    			driverUtil.setPropsPrefix(accountName.getPropsPrefix());
+    			driverUtil.initializeChromeWebDriver(accountName.getloginUriProp(), false);
+    			loginBox = driverUtil.getDocElement(driverUtil.getLoginBoxId());
     			assertNotNull(loginBox);
     	}
     }
      
+    
      @Test
      public void testLogInInputFields () {
-    	 driverUtil.setPropsPrefix(VIRGINPREFIX);
-    	 driverUtil.initializeChromeWebDriver(VIRGINSTUBLOGINURI);
-    	 driverUtil.logIntoSite();
-    	 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(summaryScreenTitle));
-     }
+    	 for (accountEnum accountName : accountEnum.values()) {
+    			 driverUtil.setPropsPrefix(accountName.getPropsPrefix());
+		    	 driverUtil.initializeChromeWebDriver(accountName.getloginUriProp(), false);
+		    	 driverUtil.logIntoSite(accountName.name(), accountName.getloginUriProp());
+		    	 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountName.getSummaryScreenTitle()));
+		    	 
+		    	 if(accountName.name().equalsIgnoreCase(accountEnum.CATERALLEN.toString())){
+    	 
+    	 			driverUtil.setPropsPrefix(accountEnum.CATERALLEN.getPropsPrefix());
+		    		 driverUtil.initializeChromeWebDriver(accountEnum.CATERALLEN.getPACTitle(), false);
+		    		 driverUtil.logIntoSite(accountEnum.CATERALLEN.toString(), accountEnum.CATERALLEN.getPACTitle());
+		    		 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountEnum.VIRGIN.getSummaryScreenTitle()));
+		    	 }
+    	 	}
+    }
      
+    
      @Test
-     public void testReturnSummaryFromAccountScreen () {
-    	 driverUtil.setPropsPrefix(VIRGINPREFIX);
-    	 driverUtil.initializeChromeWebDriver(VIRGINSTUBSUMMARYURI);
+     public void testReturnSummaryFromVirginAccountScreen () {
+    	 driverUtil.setPropsPrefix(accountEnum.VIRGIN.getPropsPrefix());
+    	 driverUtil.initializeChromeWebDriver(VIRGINSTUBSUMMARYURI, false);
     	 BigDecimal valuationSummary = driverUtil.getValuationSummary();
-    	 assertTrue(valuationSummary.doubleValue() == summaryValue);
+    	 assertTrue(valuationSummary.doubleValue() == accountEnum.VIRGIN.getBalance());
     	 
     	 if (valuationSummary != null) {
     		 assertEquals(new Long(1), new Long(
@@ -172,7 +188,7 @@ public class WebDriverUtilTest {
     				 ));
     	 }
     }
-     
+  
    @After
      public void tearDown() {
     	 driverUtil.quitChromeWebDriver();
