@@ -20,6 +20,7 @@ public class Application {
     	WebDriverUtil driverUtil = null;
     	JDBCUtil jdbcUtil = null;
 
+    	final int WAIT_TIME = 3000;
     	final String VIRGINPREFIX = "virgin.login.";
     	
     	final String propertiesLocation = "src\\main\\resources\\docelement.properties";
@@ -44,7 +45,7 @@ public class Application {
 	    	driverUtil.initializeChromeWebDriver(accountName.getloginUriProp(), false);
 	    	driverUtil.logIntoSite(accountName.name(), accountName.getloginUriProp());
 	    	
-	    	Thread.sleep(3000);//Wait for load
+	    	Thread.sleep(WAIT_TIME);//Wait for load
 /*
  * 
 	    	if(accountName.name().equalsIgnoreCase(accountEnum.CATERALLEN.toString())){
