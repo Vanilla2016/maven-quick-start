@@ -57,11 +57,11 @@ public class WebDriverUtil extends CommonFinanceUtil{
 			options.addArguments("--disable-browser-side-navigation"); 
 			options.addArguments("--disable-gpu"); 
 			driver = new ChromeDriver(options); 
-			if (liveContext) {
-				driver.get(uriKey);
-			}else {
+			//if (liveContext) {
+			//	driver.get(uriKey);
+			//}else {
 				driver.get(prop.getProperty(propsPrefix+uriKey));
-			}
+		//	}
 		}
 	
 	public void quitChromeWebDriver() {
@@ -92,6 +92,10 @@ public class WebDriverUtil extends CommonFinanceUtil{
 		return driver.getTitle();
 	}
 	
+	public WebDriver getDriver() {
+		return driver;
+	}
+	
 	/*
 	 * siteName param as different login screens feature different elements
 	 */
@@ -111,8 +115,7 @@ public class WebDriverUtil extends CommonFinanceUtil{
 		if (submitButton != null) submit=true;
 		
 		}
-		/*
-		 * 
+		
 		else if (siteName.equalsIgnoreCase(accountEnum.CATERALLEN.toString())) {
 			if (navPos.equalsIgnoreCase("pacURi")) {//PAC screen
 				char [] pinCode = prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+PINKEY).toCharArray();
@@ -129,13 +132,13 @@ public class WebDriverUtil extends CommonFinanceUtil{
 				if (submitButton != null) submit=true;
 			}else {
 				 // Switching to Alert        
-		        Alert alert = driver.switchTo().alert();		
+		       // Alert alert = driver.switchTo().alert();		
 		        		
 		        // Capturing alert message.    
-		        String alertMessage= driver.switchTo().alert().getText();		
+		      //  String alertMessage= driver.switchTo().alert().getText();		
 		        		
 		        // Displaying alert message		
-		        System.out.println(alertMessage);
+		   //     System.out.println(alertMessage);
 		        Thread.sleep(5000);
 		    	populateDocElement(prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+LOGINBOXKEY), 
 												prop.getProperty(accountEnum.CATERALLEN.getPropsPrefix()+USERKEY));
@@ -143,7 +146,7 @@ public class WebDriverUtil extends CommonFinanceUtil{
 				if (submitButton != null) submit=true;
 			}
 		}
-		 */
+	
 		/*
 		 * This seems to implicitly operate a get, 
 		 * as the method blocks until the Summary screen is returned

@@ -3,10 +3,10 @@ package clinic.finance.beans;
 public enum accountEnum {
 
 	//FIRSTDIRECT, CATERALLEN, TANDEM
-	VIRGIN(1, 19362.64, accountTypeEnum.ISA.toString(), "Virgin S&S", 0, "virgin.login.", "loginUri", "virginMoneyHTML", "Error 404");
-	//,
+	VIRGIN(1, 19362.64, accountTypeEnum.ISA.toString(), "Virgin S&S", 0, "virgin.login.", "loginUri", "virginMoneyHTML", "Error 404")
+	,
 				//MARCUS(2, 0.0, accountTypeEnum.CURRENT.toString(), "Marcus", 0);
-	//CATERALLEN(3, 0.0, accountTypeEnum.BUSINESS.toString(), "CaterAllen", 0, "callen.login.", "loginUri", "callenHTML", "Welcome to Cater Allen Private Bank");
+	CATERALLEN(3, 0.0, accountTypeEnum.BUSINESS.toString(), "CaterAllen", 0, "callen.login.", "loginUri", "callenHTML", "Error 404");//Welcome to Cater Allen Private Bank
 		
 	private String loginUriProp; 
 	private String propsPrefix; 

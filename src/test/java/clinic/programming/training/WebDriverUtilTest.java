@@ -131,13 +131,14 @@ public class WebDriverUtilTest {
 
     }
     
-   
+   @Ignore
     @Test
     public void testLoadResourceAsUrl() {
     	driverUtil.setPropsPrefix(accountEnum.VIRGIN.getPropsPrefix());
     	driverUtil.initializeChromeWebDriver(accountEnum.VIRGIN.getloginUriProp(), false);
     }
    
+   @Ignore
     @Test
     /*
      * initializeChromeWebDriver param had been set to virginHTML - 
@@ -155,24 +156,30 @@ public class WebDriverUtilTest {
      
     
      @Test
-     public void testLogInInputFields () {
+     public void testLogInInputFields () throws InterruptedException {
     	 for (accountEnum accountName : accountEnum.values()) {
-    			 driverUtil.setPropsPrefix(accountName.getPropsPrefix());
+    			
+    		 	 driverUtil.setPropsPrefix(accountName.getPropsPrefix());
 		    	 driverUtil.initializeChromeWebDriver(accountName.getloginUriProp(), false);
 		    	 driverUtil.logIntoSite(accountName.name(), accountName.getloginUriProp());
-		    	 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountName.getSummaryScreenTitle()));
-		    	 
-		    	 if(accountName.name().equalsIgnoreCase(accountEnum.CATERALLEN.toString())){
+
+		    	 if(accountName.name().equalsIgnoreCase(accountEnum.VIRGIN.toString())){
+		    		 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountEnum.VIRGIN.getSummaryScreenTitle()));
+		    	 }else if(accountName.name().equalsIgnoreCase(accountEnum.CATERALLEN.toString())){
     	 
-    	 			driverUtil.setPropsPrefix(accountEnum.CATERALLEN.getPropsPrefix());
+		    		 //System.out.println(driverUtil.getPageTitle());
+		    		 //System.out.println(accountEnum.CATERALLEN.getSummaryScreenTitle());
+    	 			 driverUtil.setPropsPrefix(accountEnum.CATERALLEN.getPropsPrefix());
 		    		 driverUtil.initializeChromeWebDriver(accountEnum.CATERALLEN.getPACTitle(), false);
 		    		 driverUtil.logIntoSite(accountEnum.CATERALLEN.toString(), accountEnum.CATERALLEN.getPACTitle());
-		    		 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountEnum.VIRGIN.getSummaryScreenTitle()));
+		    		 assertTrue(driverUtil.getPageTitle().equalsIgnoreCase(accountEnum.CATERALLEN.getSummaryScreenTitle()));
 		    	 }
+		    	 
     	 	}
     }
      
     
+     @Ignore
      @Test
      public void testReturnSummaryFromVirginAccountScreen () {
     	 driverUtil.setPropsPrefix(accountEnum.VIRGIN.getPropsPrefix());
